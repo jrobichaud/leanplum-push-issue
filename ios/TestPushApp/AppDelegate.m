@@ -72,7 +72,6 @@ static void InitializeFlipper(UIApplication *application) {
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings{
   NSLog(@"[LNOTIF] didRegisterUserNotificationSettings %@",notificationSettings);
   [RNCPushNotificationIOS didRegisterUserNotificationSettings:notificationSettings];
-  [Leanplum didRegisterUserNotificationSettings:notificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
@@ -86,34 +85,26 @@ static void InitializeFlipper(UIApplication *application) {
   //NSLog(@"---%@",deviceToken);
   //[FBSDKAppEvents setPushNotificationsDeviceToken:deviceToken];
   [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-  [Leanplum didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 
 // Called when notification is received, `completionHandler` must be called ASAP when not in foreground
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler {
   NSLog(@"[LNOTIF] didReceiveRemoteNotification");
-  
-
-  [Leanplum didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(LeanplumUIBackgroundFetchResult result){
-    NSLog(@"[LNOTIF] leanplum finish notification");
     [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult rncResult){
       NSLog(@"[LNOTIF] finish notification");
       completionHandler(rncResult);
     }];
-  }];
 }
 
 -(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
   NSLog(@"[LNOTIF] didReceiveLocalNotification");
   [RNCPushNotificationIOS didReceiveLocalNotification:notification];
-  [Leanplum didReceiveLocalNotification:notification];
 }
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(nonnull NSError *)error{
   NSLog(@"[LNOTIF] didFailToRegisterForRemoteNotificationsWithError");
   [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
-  [Leanplum didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 // Called when notification is clicked from background or when app is killed
@@ -123,7 +114,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
   NSLog(@"[LNOTIF] didReceiveNotificationResponse");
   [RNCPushNotificationIOS didReceiveNotificationResponse:response];
-  [Leanplum didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
 
@@ -131,10 +121,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
   NSLog(@"[LNOTIF] willPresentNotification");
-  [[LPPushNotificationsManager sharedManager].handler willPresentNotification:notification withCompletionHandler:^(UNNotificationPresentationOptions options){
-    NSLog(@"[LNOTIF] willPresentNotification finish");
-    completionHandler(options);
-  }];
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+
 }
 
 @end
