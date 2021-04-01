@@ -1,4 +1,4 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 def add_flipper_pods!(versions = {})
@@ -51,7 +51,7 @@ target 'TestPushApp' do
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
   pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
   pod 'React', :path => '../node_modules/react-native/'
-  pod 'React-Core', :path => '../node_modules/react-native/'
+  pod 'React-Core', :path => '../node_modules/react-native/', :modular_headers => true
   pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
   pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
   pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
@@ -77,12 +77,20 @@ target 'TestPushApp' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'TestPushAppTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   use_native_modules!
+
+  dynamic_frameworks = ['Leanplum-iOS-SDK']
+  pre_install do |installer|
+    Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+    installer.pod_targets.each do |pod|
+        if dynamic_frameworks.include?(pod.name)
+          puts "Setting dynamic linking for #{pod.name}"
+          def pod.build_type;
+            Pod::BuildType.dynamic_framework
+          end
+        end
+      end
+  end
 
   # Enables Flipper.
   #
@@ -91,14 +99,5 @@ target 'TestPushApp' do
   add_flipper_pods!
   post_install do |installer|
     flipper_post_install(installer)
-  end
-end
-
-target 'TestPushApp-tvOS' do
-  # Pods for TestPushApp-tvOS
-
-  target 'TestPushApp-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 end
