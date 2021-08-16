@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@leanplum/react-native-sdk": "^1.1.1",
+    "@leanplum/react-native-sdk": "1.2.0",
     "@react-native-community/push-notification-ios": "^1.8.0",
     "react": "16.11.0",
     "react-native-gesture-handler": "^1.5.2",
