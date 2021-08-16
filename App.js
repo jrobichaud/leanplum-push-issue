@@ -12,7 +12,6 @@ import {Linking, Text, View} from 'react-native';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import LP from './LP';
-LP.start();
 
 const uriPrefix = 'notiftest://';
 
@@ -54,6 +53,7 @@ class App extends React.Component<{initialURL: ?string}, {}> {
   constructor(props) {
     super(props);
     console.log('initial url props', props.initialURL);
+    LP.start();
   }
   componentDidMount() {
     // Linking.openURL(uriPrefix+'lib/book/9782264064066')
